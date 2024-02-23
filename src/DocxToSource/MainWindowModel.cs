@@ -421,7 +421,6 @@ namespace DocxToSource
         {
             if (_oPkg != null)
             {
-                _oPkg.Close();
                 _oPkg.Dispose();
                 _oPkg = null;
             }

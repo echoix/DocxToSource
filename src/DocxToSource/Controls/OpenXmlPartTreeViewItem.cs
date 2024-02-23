@@ -60,7 +60,8 @@ namespace DocxToSource.Controls
             : base(p != null && p.OpenXmlPart != null && p.OpenXmlPart.Parts != null &&
                   (p.OpenXmlPart.Parts.Any() || p.OpenXmlPart.RootElement != null))
         {
-            part = p ?? throw new ArgumentNullException(nameof(p));
+            ArgumentNullException.ThrowIfNull(p);
+            part = p;
         }
 
         #endregion
