@@ -20,6 +20,14 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 DEALINGS IN THE SOFTWARE.
 */
 
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
+using System.IO.Packaging;
+using System.Windows;
+using System.Windows.Input;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocxToSource.Controls;
@@ -29,14 +37,6 @@ using ICSharpCode.AvalonEdit.Highlighting;
 using Microsoft.Win32;
 using Prism.Commands;
 using Prism.Mvvm;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
-using System.IO.Packaging;
-using System.Windows;
-using System.Windows.Input;
 
 namespace DocxToSource
 {
@@ -79,7 +79,7 @@ namespace DocxToSource
         private string _fileName;
 
         /// <summary>
-        /// Indicates whether or not to automatically generate source code when 
+        /// Indicates whether or not to automatically generate source code when
         /// selecting DOM nodes.
         /// </summary>
         private bool _generateSourceCode;
@@ -102,7 +102,7 @@ namespace DocxToSource
         private OpenXmlPackage _oPkg;
 
         /// <summary>
-        /// Holds the raw package used to stage the stream information for 
+        /// Holds the raw package used to stage the stream information for
         /// validation purposes.
         /// </summary>
         private Package _pkg;
@@ -163,9 +163,12 @@ namespace DocxToSource
         /// Initializes a new instance of the <see cref="MainWindowModel"/> class that
         /// is empty.
         /// </summary>
-        public MainWindowModel() : base()
+        public MainWindowModel()
+            : base()
         {
-            _currentFileDirectory = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+            _currentFileDirectory = new DirectoryInfo(
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            );
             _treeData = new ObservableCollection<OpenXmlTreeViewItem>();
 
             ObservableCollection<LanguageDefinition> langeDefs = new();
@@ -245,7 +248,7 @@ namespace DocxToSource
         }
 
         /// <summary>
-        /// Indicates whether or not to automatically generate source code when 
+        /// Indicates whether or not to automatically generate source code when
         /// selecting DOM nodes.
         /// </summary>
         public bool GenerateSourceCode
@@ -270,7 +273,9 @@ namespace DocxToSource
             set
             {
                 _highlightSyntax = value;
-                ToggleSyntaxHighlighting(GenerateSourceCode && !(SelectedItem is null) && _highlightSyntax);
+                ToggleSyntaxHighlighting(
+                    GenerateSourceCode && !(SelectedItem is null) && _highlightSyntax
+                );
                 FireChangeEvent(nameof(HighlightSyntax));
             }
         }
@@ -460,22 +465,23 @@ namespace DocxToSource
             const string xlsxIdUri = "/xl/workbook.xml";
             const string pptxIdUri = "/ppt/presentation.xml";
             const string fileFilter =
-                "All Microsoft Office 2007+ valid documents|*.xlsx;*.xlsm;*.xltx;*.pptx;*.pptm;*.potx;*.docx;*.docm;*.dotx;*.dotm" +
-                "|Microsoft Excel 2007+ documents|*.xlsx;*.xlsm;*.xltx" +
-                "|Microsoft Powerpoint 2007+ documents|*.pptx;*.pptm;*.potx" +
-                "|Microsoft Word 2007+ documents|*.docx;*.docm;*.dotx;*.dotm" +
-                "|All files|*.*";
+                "All Microsoft Office 2007+ valid documents|*.xlsx;*.xlsm;*.xltx;*.pptx;*.pptm;*.potx;*.docx;*.docm;*.dotx;*.dotm"
+                + "|Microsoft Excel 2007+ documents|*.xlsx;*.xlsm;*.xltx"
+                + "|Microsoft Powerpoint 2007+ documents|*.pptx;*.pptm;*.potx"
+                + "|Microsoft Word 2007+ documents|*.docx;*.docm;*.dotx;*.dotm"
+                + "|All files|*.*";
 
             bool? dialogResult;
-            OpenFileDialog ofDialog = new()
-            {
-                InitialDirectory = _currentFileDirectory.FullName,
-                Multiselect = false,
-                CheckFileExists = true,
-                CheckPathExists = true,
-                Filter = fileFilter,
-                FilterIndex = 1
-            };
+            OpenFileDialog ofDialog =
+                new()
+                {
+                    InitialDirectory = _currentFileDirectory.FullName,
+                    Multiselect = false,
+                    CheckFileExists = true,
+                    CheckPathExists = true,
+                    Filter = fileFilter,
+                    FilterIndex = 1
+                };
 
             dialogResult = ofDialog.ShowDialog();
             if (!dialogResult.GetValueOrDefault(false))
@@ -500,12 +506,13 @@ namespace DocxToSource
             _pkg = Package.Open(_stream);
 
             // Setup a quick look up for easier package validation
-            Dictionary<string, Func<Package, OpenXmlPackage>> quickPicks = new(3)
-            {
-                { docxIdUri, WordprocessingDocument.Open },
-                { xlsxIdUri, SpreadsheetDocument.Open },
-                { pptxIdUri, PresentationDocument.Open }
-            };
+            Dictionary<string, Func<Package, OpenXmlPackage>> quickPicks =
+                new(3)
+                {
+                    { docxIdUri, WordprocessingDocument.Open },
+                    { xlsxIdUri, SpreadsheetDocument.Open },
+                    { pptxIdUri, PresentationDocument.Open }
+                };
 
             foreach (KeyValuePair<string, Func<Package, OpenXmlPackage>> qp in quickPicks)
             {
@@ -519,7 +526,9 @@ namespace DocxToSource
             // Make sure that a valid package was found before proceeding.
             if (_oPkg == null)
             {
-                throw new InvalidDataException("Selected file is not a known/valid OpenXml document");
+                throw new InvalidDataException(
+                    "Selected file is not a known/valid OpenXml document"
+                );
             }
 
             // Wrap it up

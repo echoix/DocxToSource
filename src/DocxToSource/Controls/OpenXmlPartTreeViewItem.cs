@@ -20,12 +20,12 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 DEALINGS IN THE SOFTWARE.
 */
 
-using DocumentFormat.OpenXml.Packaging;
-using Serialize.OpenXml.CodeGen;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
+using DocumentFormat.OpenXml.Packaging;
+using Serialize.OpenXml.CodeGen;
 
 namespace DocxToSource.Controls
 {
@@ -57,8 +57,12 @@ namespace DocxToSource.Controls
         /// <paramref name="p"/> is <see langword="null"/>.
         /// </exception>
         public OpenXmlPartTreeViewItem(IdPartPair p)
-            : base(p != null && p.OpenXmlPart != null && p.OpenXmlPart.Parts != null &&
-                  (p.OpenXmlPart.Parts.Any() || p.OpenXmlPart.RootElement != null))
+            : base(
+                p != null
+                    && p.OpenXmlPart != null
+                    && p.OpenXmlPart.Parts != null
+                    && (p.OpenXmlPart.Parts.Any() || p.OpenXmlPart.RootElement != null)
+            )
         {
             ArgumentNullException.ThrowIfNull(p);
             part = p;
